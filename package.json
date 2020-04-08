@@ -1,0 +1,46 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "crypto-js": "^4.0.0",
+    "express": "^4.17.1",
+    "express-jwt": "^5.3.3",
+    "jwks-rsa": "^1.7.0",
+    "pg": "^7.18.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.2",
+    "@babel/core": "^7.6.2",
+    "@babel/node": "^7.6.2",
+    "@babel/preset-env": "^7.6.2",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.14.3",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "nodemon": "^1.19.2"
+  },
+  "scripts": {
+    "start": "nodemon --watch src --exec babel-node -- src/index.js",
+    "lint-me": "eslint .",
+    "babel-node": "babel-node",
+    "build": "babel src -d dist --presets @babel/env",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boivlad/NodeJS.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/boivlad/NodeJS/issues"
+  },
+  "homepage": "https://github.com/boivlad/NodeJS#readme",
+  "keywords": [],
+  "description": ""
+}
