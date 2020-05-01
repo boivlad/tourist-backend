@@ -1,5 +1,5 @@
 export const app = {
-  "port": 3000,
+  "port": 8080,
   "jwt": {
     secret: 'SecretKeyForAuth',
     tokens: {

@@ -1,2 +1,1 @@
-import authToken from './authToken';
-export default authToken;
+export { default as authToken } from "./authToken";
