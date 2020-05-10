@@ -19,10 +19,18 @@ const connection = async (role) => {
   await client.connect();
   return client;
 }
+
+const connectionClient = () => {
+  return connection('client');
+}
 const connectionAnonymous = () => {
   return connection('anonymous');
 }
+const connectionSuper = () => {
+  return connection('postgres');
+}
 export {
-  connection,
-  connectionAnonymous
+  connectionClient,
+  connectionAnonymous,
+  connectionSuper,
 }

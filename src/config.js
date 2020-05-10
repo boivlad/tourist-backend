@@ -5,13 +5,8 @@ export const app = {
     tokens: {
       access: {
         type: 'access',
-        expiresIn: '2m',
-      },
-
-      refresh: {
-        type: 'refresh',
-        expiresIn: '3m',
-      },
+        expiresIn: '1h',
+      }
     },
   },
   "database": {
@@ -32,7 +27,7 @@ export const app = {
         "password": "1111"
       }
     },
-    "database": "tourist1",
+    "database": "tourist3",
     "host": "localhost",
     "port": "5432"
   }

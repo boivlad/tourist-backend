@@ -1,1 +1,1 @@
-export { default as authToken } from "./authToken";
+export { default as token } from "./token";

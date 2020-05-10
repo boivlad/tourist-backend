@@ -1,13 +1,5 @@
 -- Database: Tourist agency
-
--- DROP DATABASE "Tourist agency";
-
-CREATE DATABASE tourist
-    WITH
-    OWNER = postgres
-    ENCODING = 'UTF8'
-    CONNECTION LIMIT = -1;
-
+CREATE USER anonymous;
 CREATE SCHEMA tokens AUTHORIZATION postgres;
 GRANT USAGE ON SCHEMA tokens TO anonymous
 WITH
@@ -30,27 +22,32 @@ CREATE DOMAIN Roles VARCHAR CHECK
 ('client', 'manager', 'director', 'anonymous'));
 
 CREATE OR REPLACE FUNCTION clientRegistration(firstName varchar, lastName varchar, login varchar,
-    email varchar, password varchar, phone CHAR(13), address varchar, DateOfBirthday date)
-              RETURNS Void
-AS $$
-  BEGIN
-    SET _new_id;
-    _new_id := INSERT INTO clients(FirstName, LastName, Phone, DateOfBirthday, Address) VALUES(firstName, lastName, phone, DateOfBirthday, address) RETURNING userId;
-    INSERT INTO Users(userId, login, password, email) VALUES(_new_id, login, password, email);
-  END;
-$$ LANGUAGE plpgSQL;CREATE TABLE Users
+	email varchar, password varchar, phone CHAR(13), address varchar, DateOfBirthday date)
+						RETURNS Void
+	AS $$
+		BEGIN
+			SET _new_id;
+			_new_id := INSERT INTO clients(FirstName, LastName, Phone, DateOfBirthday, Address) VALUES(firstName, lastName, phone, DateOfBirthday, address) RETURNING userId;
+			INSERT INTO Users(userId, login, password, email) VALUES(_new_id, login, password, email);
+		END;
+$$ LANGUAGE plpgSQL;
+CREATE TABLE Users
 (
 userId SERIAL PRIMARY KEY,
 login VARCHAR NOT NULL,
 password VARCHAR NOT NULL,
 email VARCHAR NOT NULL,
 role Roles NOT NULL DEFAULT 'client'
-);CREATE TABLE tokens.auth
+);
+
+CREATE TABLE tokens.auth
 (
 id SERIAL PRIMARY KEY,
 tokenId VARCHAR NOT NULL,
 userId integer NOT NULL REFERENCES public.users(userId)
-);CREATE TABLE Clients
+);
+
+CREATE TABLE Clients
 (
 UserId SERIAL PRIMARY KEY,
 FirstName VARCHAR NOT NULL,
@@ -58,7 +55,9 @@ LastName VARCHAR NOT NULL,
 Phone CHAR(13)NOT NULL,
 DateOfBirthday DATE NOT NULL,
 Address VARCHAR NOT NULL
-);CREATE TABLE Employees
+);
+
+CREATE TABLE Employees
 (
 Id SERIAL PRIMARY KEY,
 FirstName VARCHAR NOT NULL,
