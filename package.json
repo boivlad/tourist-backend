@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.9.6",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
@@ -16,7 +19,6 @@
     "@babel/core": "^7.6.2",
     "@babel/node": "^7.6.2",
     "@babel/preset-env": "^7.6.2",
-    "cors": "^2.8.5",
     "eslint": "^6.1.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-google": "^0.14.0",
@@ -28,8 +30,8 @@
   },
   "scripts": {
     "start": "nodemon --watch src --exec babel-node -- src/index.js",
-    "lint-me": "eslint .",
-    "babel-node": "babel-node",
+    "lint:js": "eslint src/**/*.js",
+    "fix:js": "eslint src/**/*.js --fix",
     "build": "babel src -d dist --presets @babel/env",
     "prepublishOnly": "npm run build"
   },

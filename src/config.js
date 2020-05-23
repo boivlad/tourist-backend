@@ -1,34 +1,34 @@
 export const app = {
-  "port": 8080,
-  "jwt": {
+  port: 8080,
+  jwt: {
     secret: 'SecretKeyForAuth',
     tokens: {
       access: {
         type: 'access',
         expiresIn: '1h',
-      }
+      },
     },
   },
-  "database": {
-    "roles": {
-      "client": {
-        "password": "client"
+  database: {
+    roles: {
+      client: {
+        password: 'client',
       },
-      "manager": {
-        "password": "manager"
+      manager: {
+        password: 'manager',
       },
-      "director": {
-        "password": "director"
+      director: {
+        password: 'director',
       },
-      "postgres": {
-        "password": "1111"
+      postgres: {
+        password: '1111',
       },
-      "anonymous": {
-        "password": "1111"
-      }
+      anonymous: {
+        password: '1111',
+      },
     },
-    "database": "tourist3",
-    "host": "localhost",
-    "port": "5432"
-  }
+    database: 'tourist3',
+    host: 'localhost',
+    port: '5432',
+  },
 };

@@ -1,10 +1,9 @@
-import express from 'express'
+import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import { app as configApp } from './config';
 import './models';
 import { auth, hotels } from './routes';
-
-const cors = require('cors');
 
 const app = express();
 app.use(cors());

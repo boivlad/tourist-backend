@@ -1,36 +1,30 @@
-import { Client } from "pg";
+import { Client } from 'pg';
 import { app as config } from '../config';
 
-const database = config.database;
-const host = database.host;
-const port = database.port;
+const { database } = config;
+const { host } = database;
+const { port } = database;
 const db = database.database;
 
-const connection = async (role) => {
+export const connection = async (role) => {
   const name = role;
   const { password } = database.roles[role];
   const client = new Client({
     user: name,
-    password: password,
-    host: host,
-    port: port,
-    database: db
+    password,
+    host,
+    port,
+    database: db,
   });
   await client.connect();
   return client;
-}
+};
 
-const connectionClient = () => {
-  return connection('client');
-}
-const connectionAnonymous = () => {
-  return connection('anonymous');
-}
-const connectionSuper = () => {
-  return connection('postgres');
-}
+const connectionClient = () => connection('client');
+const connectionAnonymous = () => connection('anonymous');
+const connectionSuper = () => connection('postgres');
 export {
   connectionClient,
   connectionAnonymous,
   connectionSuper,
-}
+};
