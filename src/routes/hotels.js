@@ -7,7 +7,7 @@ const router = express.Router();
 const getHotels = async(req, res) => {
   const client = await connection('postgres');
   const { rows } = await client.query('SELECT * FROM getHotels()');
-  res.status(200).json(rows);
+  res.status(200).json({ hotels: rows });
 };
 
 router.get('/hotels', getHotels);
