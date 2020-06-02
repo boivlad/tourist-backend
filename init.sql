@@ -209,8 +209,8 @@ RETURNS table(id integer, title varchar, description varchar, rating integer, st
 varchar, Country varchar)AS $BODY$ BEGIN return query SELECT h.id, h.title, h.description, h.rating,
 a.title AS street, c.title AS city, co.title AS Country FROM hotels h JOIN address a ON h.address =
 a.id JOIN city c ON a.city = c.id JOIN country co ON c.country = co.id;END;$BODY$
-LANGUAGE plpgsql;#
---------------------------------------------------------------------------------------
+LANGUAGE plpgsql;
+# --------------------------------------------------------------------------------------
 # -------INSERTS
 INSERT INTO Country
 (Title)

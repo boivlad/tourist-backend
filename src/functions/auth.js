@@ -1,21 +1,22 @@
 import SHA256 from 'crypto-js/sha256';
-// import { tokenHelper } from './index';
+import { tokenHelper } from './index';
+import { connection } from '../database/connect';
 
-// const { getTokenFromHeader, getUserRoleByToken } = tokenHelper;
+const { getTokenFromHeader, verifyToken } = tokenHelper;
 
 export const encryptData = (data) => SHA256(data).toString();
 
-// export const verifyAuthByBearer = async(header) => {
-//   const token = getTokenFromHeader(header);
-//   const verifyResult = getUserRoleByToken(token);
-//   if (!verifyResult) {
-//     return false;
-//   }
-//   const client = await connectionAnonymous();
-//   const { rows: tokenData } =
-//   await client.query(`SELECT * FROM tokens.blacklist WHERE token='${token}'`);
-//   if (tokenData.length !== 0) {
-//     return false;
-//   }
-//   return true;
-// };
+export const verifyAuthByBearer = async(header) => {
+  const token = getTokenFromHeader(header);
+  try {
+    const verifyResult = verifyToken(token);
+    const client = await connection('anonymous');
+    const { rows: tokenData } = await client.query(`SELECT * FROM tokens.blacklist WHERE token='${token}'`);
+    if (tokenData.length !== 0) {
+      return false;
+    }
+    return verifyResult;
+  } catch (e) {
+    return false;
+  }
+};

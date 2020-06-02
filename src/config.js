@@ -27,7 +27,7 @@ export const app = {
         password: '1111',
       },
     },
-    database: 'tourist3',
+    database: 'tourist1',
     host: 'localhost',
     port: '5432',
   },

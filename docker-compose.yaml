@@ -11,7 +11,7 @@
 #      POSTGRES_DB: touristP
 #      DATABASE_HOST: localhost
 #    volumes:
-#      - ./test.sql:/docker-entrypoint-initdb.d/init.sql
+#      - ./init_v2.sql:/docker-entrypoint-initdb.d/init.sql
 #  pgadmin:
 #    image: dpage/pgadmin4
 #    container_name: pgadmins
@@ -49,7 +49,7 @@ services:
     ports:
       - "15432:5432"
     volumes:
-      - ./test.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init_v2.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - postgres-compose-network
 
