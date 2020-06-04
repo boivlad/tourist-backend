@@ -56,7 +56,8 @@ BEGIN
         FROM hotels h
                  JOIN address a ON h.address = a.id
                  JOIN city c ON a.city = c.id
-                 JOIN country co ON c.country = co.id;
+                 JOIN country co ON c.country = co.id
+        WHERE h.ArchivedAt IS NULL;
 END;
 $$ LANGUAGE plpgSQL;
 CREATE OR REPLACE FUNCTION clientRegistration(firstName varchar, lastName varchar, login varchar,
@@ -156,6 +157,7 @@ CREATE TABLE Hotels
     Description VARCHAR NOT NULL,
     Rating      integer NOT NULL,
     Address     integer NOT NULL REFERENCES Address (Id) ON DELETE CASCADE ON UPDATE CASCADE,
+    Preview     varchar NOT NULL,
     ArchivedAt  DATE DEFAULT NULL,
     UNIQUE (Title)
 );
