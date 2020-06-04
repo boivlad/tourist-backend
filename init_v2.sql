@@ -158,7 +158,8 @@ BEGIN
                  JOIN address a ON h.address = a.id
                  JOIN city c ON a.city = c.id
                  JOIN country co ON c.country = co.id
-        WHERE h.ArchivedAt IS NULL;
+        WHERE h.ArchivedAt IS NULL
+        ORDER BY h.id DESC;
 END;
 $$ LANGUAGE plpgSQL;
 CREATE OR REPLACE FUNCTION getTours()
@@ -188,7 +189,8 @@ BEGIN
         FROM tours t
                  JOIN city c ON t.city = c.id
                  JOIN country co ON c.country = co.id
-        WHERE t.ArchivedAt IS NULL;
+        WHERE t.ArchivedAt IS NULL
+        ORDER BY t.id DESC;
 END;
 $$ LANGUAGE plpgSQL;
 CREATE OR REPLACE FUNCTION clientRegistration(firstName varchar, lastName varchar, login varchar,
