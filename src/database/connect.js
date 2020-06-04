@@ -6,7 +6,7 @@ const { host } = database;
 const { port } = database;
 const db = database.database;
 
-export const connection = async (role) => {
+export const connection = async(role) => {
   const name = 'postgres' || role;
   const { password } = database.roles[name];
   const client = new Client({
@@ -18,13 +18,4 @@ export const connection = async (role) => {
   });
   await client.connect();
   return client;
-};
-
-const connectionClient = () => connection('client');
-const connectionAnonymous = () => connection('anonymous');
-const connectionSuper = () => connection('postgres');
-export {
-  connectionClient,
-  connectionAnonymous,
-  connectionSuper,
 };
