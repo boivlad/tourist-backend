@@ -14,8 +14,12 @@ const createToken = (userId, role) => {
   return jwt.sign(payload, secret, options);
 };
 const getUserRoleByToken = (token) => {
-  const { role } = jwt.decode(token);
-  return role;
+  try {
+    const { role } = jwt.decode(token);
+    return role;
+  } catch (e) {
+    return false;
+  }
 };
 const getUserIdByToken = (token) => {
   const { userId } = jwt.decode(token);
@@ -28,10 +32,17 @@ const getTokenFromHeader = (header) => {
   }
   return false;
 };
+const isClient = (authorization) => getUserRoleByToken(getTokenFromHeader(authorization)) === 'client';
+const isManager = (authorization) => getUserRoleByToken(getTokenFromHeader(authorization)) === 'manager';
+const isDirector = (authorization) => getUserRoleByToken(getTokenFromHeader(authorization)) === 'director';
+
 export default {
   createToken,
   getUserRole: getUserRoleByToken,
   verifyToken,
   getTokenFromHeader,
   getUserIdByToken,
+  isClient,
+  isManager,
+  isDirector,
 };

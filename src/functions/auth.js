@@ -1,5 +1,5 @@
 import SHA256 from 'crypto-js/sha256';
-import { tokenHelper } from './index';
+import tokenHelper from './token';
 import { connection } from '../database/connect';
 
 const { getTokenFromHeader, verifyToken } = tokenHelper;

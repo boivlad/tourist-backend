@@ -129,7 +129,8 @@ CREATE TABLE Country
 (
     Id         SERIAL PRIMARY KEY,
     Title      VARCHAR NOT NULL,
-    ArchivedAt DATE DEFAULT NULL
+    ArchivedAt DATE DEFAULT NULL,
+    UNIQUE (Title)
 );
 
 CREATE TABLE City
@@ -155,7 +156,8 @@ CREATE TABLE Hotels
     Description VARCHAR NOT NULL,
     Rating      integer NOT NULL,
     Address     integer NOT NULL REFERENCES Address (Id) ON DELETE CASCADE ON UPDATE CASCADE,
-    ArchivedAt  DATE DEFAULT NULL
+    ArchivedAt  DATE DEFAULT NULL,
+    UNIQUE (Title)
 );
 
 CREATE TABLE Rooms
@@ -168,7 +170,8 @@ CREATE TABLE Rooms
     Hotel       integer NOT NULL REFERENCES Hotels (Id) ON DELETE CASCADE ON UPDATE CASCADE,
     Rating      integer NOT NULL,
     Quantity    integer NOT NULL,
-    ArchivedAt  DATE DEFAULT NULL
+    ArchivedAt  DATE DEFAULT NULL,
+    UNIQUE (Title)
 );
 INSERT INTO Country
     (Title)
@@ -218,163 +221,3 @@ VALUES (3, 'улица Городоцкая 65');
 INSERT INTO Address
     (city, title)
 VALUES (3, 'Ploshcha Knyazya Svyatoslava 5');
-INSERT INTO Hotels
-    (title, description, rating, address)
-VALUES ('Wall Street',
-        'Отель Wall Street расположен в Приморском районе Одессы, в 300 метрах от улицы Дерибасовской и в 700 метрах от Одесского театра оперы и балета. К услугам гостей терраса и круглосуточная стойка регистрации.'
-           , 4, 1);
-INSERT INTO Hotels
-    (title, description, rating, address)
-VALUES ('arenda24-2 Deribasovskaya',
-        'Комплекс «Аренда24-2 Дерибасовская» с видом на сад расположен в Приморском районе Одессы. К услугам гостей кондиционер и патио. Из апартаментов с балконом открывается вид на город.'
-           , 4, 2);
-INSERT INTO Hotels
-    (title, description, rating, address)
-VALUES ('Feeria Apartment Deribasovskaya',
-        'Апартаменты «Феерия Дерибасовская» расположены в Одессе, в 400 м от Одесского театра оперы и балета. К услугам гостей кондиционер, бесплатный Wi-Fi и терраса.'
-           , 4, 3);
-INSERT INTO Hotels
-    (title, description, rating, address)
-VALUES ('ibis Kiev Railway Station',
-        'Отель «Ibis Киев Вокзал» расположен в Киеве, всего в 2 минутах ходьбы от главного железнодорожного вокзала и остановки автобуса, следующего до международного аэропорта. К услугам гостей полностью оборудованные конференц-залы и бесплатный Wi-Fi.'
-           , 3, 4);
-INSERT INTO Hotels
-    (title, description, rating, address)
-VALUES ('irisHotels',
-        'Этот отель находится в 3 минутах ходьбы от станции метро «Вокзальная» и железнодорожного вокзала Киева. К услугам гостей бесплатный Wi-Fi и круглосуточная стойка регистрации. В номерах и апартаментах отеля установлен телевизор с плоским экраном.'
-           , 4, 5);
-INSERT INTO Hotels
-    (title, description, rating, address)
-VALUES ('Сити Парк Отель Откроется в новом окне',
-        'Бутик-отель «Сити Парк» расположен в центре Киева. К услугам гостей роскошные номера с кондиционером, бесплатным Wi-Fi и плазменным телевизором. На территории обустроена бесплатная частная парковка.'
-           , 4, 6);
-INSERT INTO Hotels
-    (title, description, rating, address)
-VALUES ('Kvartira 157B on Tashkentskaya 24/1',
-        'Апартаменты «157Б на Ташкентской 24/1» расположены в московском районе Выхино-Жулебино, в 12 км от Николо-Угрешского монастыря. В 14 км находится парк «Зарядье», а в 15 км — Мавзолей В. И. Ленина. Предоставляется бесплатный Wi-Fi.'
-           , 3, 7);
-INSERT INTO Hotels
-    (title, description, rating, address)
-VALUES ('Apartment on Pozhyaki',
-        'Апартаменты «На Пожяки» с видом на город, балконом и чайником расположены в 11 км от Международного выставочного центра. Апартаменты расположены в здании, построенном в 2015 году, в 11 км от монумента «Родина-мать зовет!» и в 12 км от музея микроминиатюр Микола Сюадрисы. Предоставляется бесплатный Wi-Fi.'
-           , 3, 8);
-INSERT INTO Hotels
-    (title, description, rating, address)
-VALUES ('Cute Apartment in the City Center',
-        'Апартаменты Cute in the City Center in Lviv с бесплатным Wi-Fi расположены в 400 м от Львовского национального университета имени Ивана Франко, в 800 м от собора Святого Георгия и менее чем в 1 км от дворца Потоцких. Расстояние до театра Марии Мария составляет 1,5 км, а до Львовского кафедрального собора — 1,8 км.'
-           , 4, 9);
-INSERT INTO Hotels
-    (title, description, rating, address)
-VALUES ('Two-bedroom apartment near the station',
-        'Апартаменты «Около вокзала» с бесплатным Wi-Fi и балконом расположены в городе Львов, в 500 метрах от церкви святого Георгия Победоносца. В числе удобств — бесплатная частная парковка. Львовский железнодорожный вокзал и центр города находятся в 20 минутах ходьбы.'
-           , 3, 10);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный двухместный номер с 2 отдельными кроватями',
-        'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2,
-        250, 1,
-        5, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный одномесный номер',
-        'Звукоизолированный одномесный номер, мини-баром и халатом.',
-        1, 150, 1, 5, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный двухместный номер с 2 отдельными кроватями',
-        'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2,
-        230, 2,
-        4, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный одномесный номер',
-        'Звукоизолированный одномесный номер, мини-баром и халатом.',
-        1, 120, 2, 4, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный двухместный номер с 2 отдельными кроватями',
-        'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2,
-        245, 3,
-        4, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный одномесный номер',
-        'Звукоизолированный одномесный номер, мини-баром и халатом.',
-        1, 130, 3, 3, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный двухместный номер с 2 отдельными кроватями',
-        'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2,
-        240, 4,
-        4, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный одномесный номер',
-        'Звукоизолированный одномесный номер, мини-баром и халатом.',
-        1, 140, 4, 4, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный двухместный номер с 2 отдельными кроватями',
-        'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2,
-        225, 5,
-        4, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный одномесный номер',
-        'Звукоизолированный одномесный номер, мини-баром и халатом.',
-        1, 150, 5, 5, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный двухместный номер с 2 отдельными кроватями',
-        'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2,
-        300, 6,
-        5, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный одномесный номер',
-        'Звукоизолированный одномесный номер, мини-баром и халатом.',
-        1, 160, 6, 5, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный двухместный номер с 2 отдельными кроватями',
-        'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2,
-        260, 7,
-        5, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный одномесный номер',
-        'Звукоизолированный одномесный номер, мини-баром и халатом.',
-        1, 145, 7, 4, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный двухместный номер с 2 отдельными кроватями',
-        'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2,
-        270, 8,
-        5, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный одномесный номер',
-        'Звукоизолированный одномесный номер, мини-баром и халатом.',
-        1, 155, 8, 5, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный двухместный номер с 2 отдельными кроватями',
-        'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2,
-        280, 9,
-        5, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный одномесный номер',
-        'Звукоизолированный одномесный номер, мини-баром и халатом.',
-        1, 135, 9, 3, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный двухместный номер с 2 отдельными кроватями',
-        'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2,
-        290, 10,
-        5, 50);
-INSERT INTO Rooms
-(title, description, places, price, hotel, rating, quantity)
-VALUES ('Стандартный одномесный номер',
-        'Звукоизолированный одномесный номер, мини-баром и халатом.',
-        1, 105, 10, 3, 50);
