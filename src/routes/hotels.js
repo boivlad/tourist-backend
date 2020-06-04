@@ -27,7 +27,7 @@ const createHotel = async(req, res) => {
   }
   const client = await connection('director');
 
-  await uploadFile(req, res, async(err) => {
+  uploadFile(req, res, async(err) => {
     if (err) {
       return res.status(403).json({ message: err });
     }
@@ -39,10 +39,9 @@ const createHotel = async(req, res) => {
       return res.status(201).json({ message: 'New hotel was created successfully' });
     } catch (e) {
       if (e.code === '23505') {
-        res.status(409).json({ message: 'Same hotel already exist' });
-      } else {
-        res.status(422).json({ message: e });
+        return res.status(409).json({ message: 'Same hotel already exist' });
       }
+      return res.status(422).json({ message: e });
     }
   });
 };
