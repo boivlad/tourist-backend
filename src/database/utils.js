@@ -35,7 +35,7 @@ const getHotels = async(client) => {
 };
 const getHotelById = async(client, { hotelId }) => {
   console.log('getHotelById', hotelId);
-  const result = await client.query(`SELECT * FROM getHotels(${hotelId})`);
+  const result = await client.query(`SELECT * FROM getHotels(${hotelId}) LIMIT 1`);
   return result.rows;
 };
 const createTour = async(client, {
@@ -52,7 +52,7 @@ const getTours = async(client) => {
 };
 const getToursById = async(client, { tourId }) => {
   console.log('getToursById', tourId);
-  const result = await client.query(`SELECT * FROM getTours(${tourId})`);
+  const result = await client.query(`SELECT * FROM getTours(${tourId}) LIMIT 1`);
   return result.rows;
 };
 const createHotel = async(client, {
