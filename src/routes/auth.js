@@ -2,6 +2,7 @@ import express from 'express';
 import { tokenHelper } from '../functions';
 import { connection } from '../database/connect';
 import { verifyAuthByBearer } from '../functions/auth';
+import DB from '../database/utils';
 
 const router = express.Router();
 
@@ -10,7 +11,8 @@ const auth = async(req, res) => {
   try {
     const { userName, password } = req.body;
     const client = await connection('anonymous');
-    const { rows: user } = await client.query(`SELECT * FROM users WHERE login='${userName}'`);
+    const user = await DB.getUser(client, { userName });
+    client.end();
     if (user.length === 0) {
       res.status(401).json({ message: 'User does not exist' });
       return;
@@ -58,7 +60,9 @@ const registration = async(req, res) => {
       res.status(400).json({ message: 'Date Of Birth is not specified' });
     }
     const client = await connection('anonymous');
-    await client.query(`SELECT FROM clientRegistration('${firstName}', '${lastName}', '${login}', '${email}', '${password}', '${phone}', '${address}', '${dateOfBirth}')`);
+    await DB.createUser(client, {
+      firstName, lastName, login, email, password, phone, address, dateOfBirth,
+    });
     res.status(201).json({ message: 'Registration was successful' });
   } catch (e) {
     if (e.code === '23505') {
@@ -69,22 +73,23 @@ const registration = async(req, res) => {
   }
 };
 const logout = async(req, res) => {
+  const client = await connection('anonymous');
   try {
     const token = getTokenFromHeader(req.headers.authorization);
     const userId = getUserIdByToken(token);
-    const client = await connection('anonymous');
-    const { rows: tokenData } = await client.query(`SELECT * FROM tokens.blacklist WHERE token='${token}';`);
-    if (tokenData.length !== 0) {
-      res.status(203).json({ message: 'Not Authorized' });
-      return;
+    const checkToken = await DB.checkToken(client, { token });
+    if (checkToken) {
+      return res.status(203).json({ message: 'Not Authorized' });
     }
-    await client.query(`INSERT INTO tokens.blacklist(userId, token) VALUES('${userId}','${token}');`);
-    res.status(200).json({ message: 'User successfully logout' });
+    await DB.deleteToken(client, { userId, token });
+    return res.status(200).json({ message: 'User successfully logout' });
   } catch (e) {
-    res.status(203).json({
+    return res.status(203).json({
       message: 'Not Authorized',
       detail: e,
     });
+  } finally {
+    client.end();
   }
 };
 const registrationAdmin = async(req, res) => {
@@ -93,9 +98,10 @@ const registrationAdmin = async(req, res) => {
   if (!userData) {
     res.status(401).json({ message: 'Not Authorized' });
   }
-  if (userData.role !== 'client') {
+  if (userData.role !== 'director') {
     res.status(403).json({ message: 'Forbidden' });
   }
+  const client = await connection('anonymous');
   try {
     const {
       firstName, lastName, userName, email, password, phone, address, dateOfBirth, passport,
@@ -133,15 +139,26 @@ const registrationAdmin = async(req, res) => {
         { year: 'numeric', month: 'numeric', day: '2-digit' });
     }
 
-    const client = await connection('anonymous');
-    await client.query(`SELECT FROM employeesRegistration('${firstName}', '${lastName}', '${userName}', '${email}', '${password}', '${phone}', '${address}', '${dateOfBirth}', '${employmentDate}', '${passport}')`);
-    res.status(201).json({ message: 'Manager registration was successful' });
+    await DB.createAdmin(client, {
+      firstName,
+      lastName,
+      userName,
+      email,
+      password,
+      phone,
+      address,
+      dateOfBirth,
+      passport,
+      employmentDate,
+    });
+    return res.status(201).json({ message: 'Manager registration was successful' });
   } catch (e) {
     if (e.code === '23505') {
-      res.status(409).json({ message: 'User already exist' });
-    } else {
-      res.status(422).json({ message: e });
+      return res.status(409).json({ message: 'User already exist' });
     }
+    return res.status(422).json({ message: e });
+  } finally {
+    client.end();
   }
 };
 router.post('/auth', auth);

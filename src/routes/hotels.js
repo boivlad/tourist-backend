@@ -3,6 +3,7 @@ import fs from 'fs';
 import multer from 'multer';
 import { connection } from '../database/connect';
 import { tokenHelper } from '../functions';
+import DB from '../database/utils';
 
 const { isDirector } = tokenHelper;
 const router = express.Router();
@@ -19,8 +20,9 @@ const uploadFile = multer({ storage }).array('preview');
 
 const getHotels = async(req, res) => {
   const client = await connection('anonymous');
-  const { rows } = await client.query('SELECT * FROM getHotels()');
-  res.status(200).json({ hotels: rows });
+  const result = await DB.getHotels(client);
+  client.end();
+  res.status(200).json({ hotels: result });
 };
 const createHotel = async(req, res) => {
   if (!isDirector(req.headers.authorization)) {
@@ -33,11 +35,11 @@ const createHotel = async(req, res) => {
     if (err) {
       return res.status(403).json({ message: err });
     }
-    const {
-      title, description, rating, address,
-    } = req.body;
+    const queryParams = {
+      ...req.body, fileName: req.files[0].filename,
+    };
     try {
-      await client.query(`INSERT INTO Hotels (title, description, rating, address, preview) VALUES ('${title}', '${description}', '${rating}', '${address}', '${req.files[0].filename}' );`);
+      await DB.createHotel(client, queryParams);
       return res.status(201).json({
         message: 'New hotel was created successfully',
       });
@@ -47,6 +49,8 @@ const createHotel = async(req, res) => {
         return res.status(409).json({ message: 'Same hotel already exist' });
       }
       return res.status(422).json({ message: e });
+    } finally {
+      client.end();
     }
   });
 };

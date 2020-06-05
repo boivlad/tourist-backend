@@ -3,6 +3,7 @@ import fs from 'fs';
 import multer from 'multer';
 import { connection } from '../database/connect';
 import { tokenHelper } from '../functions';
+import DB from '../database/utils';
 
 const { isDirector } = tokenHelper;
 const router = express.Router();
@@ -19,8 +20,9 @@ const uploadFile = multer({ storage }).array('preview');
 
 const getTours = async(req, res) => {
   const client = await connection('anonymous');
-  const { rows } = await client.query('SELECT * FROM getTours()');
-  res.status(200).json({ tours: rows });
+  const result = await DB.getTours(client);
+  client.end();
+  res.status(200).json({ tours: result });
 };
 const createTour = async(req, res) => {
   if (!isDirector(req.headers.authorization)) {
@@ -33,11 +35,11 @@ const createTour = async(req, res) => {
     if (err) {
       return res.status(403).json({ message: err });
     }
-    const {
-      title, description, price, rating, city,
-    } = req.body;
+    const queryParams = {
+      ...req.body, fileName: req.files[0].filename,
+    };
     try {
-      await client.query(`INSERT INTO tours (title, description, price, rating, city, preview) VALUES ('${title}', '${description}', '${price}', '${rating}', '${city}', '${req.files[0].filename}' );`);
+      await DB.createTour(client, queryParams);
       return res.status(201).json({
         message: 'New tour was created successfully',
       });
@@ -47,6 +49,8 @@ const createTour = async(req, res) => {
         return res.status(409).json({ message: 'Same hotel already exist' });
       }
       return res.status(422).json({ message: e });
+    } finally {
+      client.end();
     }
   });
 };
