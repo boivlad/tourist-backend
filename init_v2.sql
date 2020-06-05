@@ -162,6 +162,38 @@ BEGIN
         ORDER BY h.id DESC;
 END;
 $$ LANGUAGE plpgSQL;
+CREATE OR REPLACE FUNCTION getHotels(hotelId int)
+    RETURNS TABLE
+            (
+                id          integer,
+                title       character varying,
+                description character varying,
+                rating      integer,
+                preview     character varying,
+                street      character varying,
+                city        character varying,
+                country     character varying
+            )
+AS
+$$
+BEGIN
+    RETURN QUERY
+        SELECT h.id,
+               h.title,
+               h.description,
+               h.rating,
+               h.preview,
+               a.title  AS street,
+               c.title  AS city,
+               co.title AS Country
+        FROM hotels h
+                 JOIN address a ON h.address = a.id
+                 JOIN city c ON a.city = c.id
+                 JOIN country co ON c.country = co.id
+        WHERE h.ArchivedAt IS NULL
+          AND h.id = hotelId;
+END;
+$$ LANGUAGE plpgSQL;
 CREATE OR REPLACE FUNCTION getTours()
     RETURNS TABLE
             (
@@ -191,6 +223,37 @@ BEGIN
                  JOIN country co ON c.country = co.id
         WHERE t.ArchivedAt IS NULL
         ORDER BY t.id DESC;
+END;
+$$ LANGUAGE plpgSQL;
+CREATE OR REPLACE FUNCTION getTours(tourId int)
+    RETURNS TABLE
+            (
+                id          integer,
+                title       character varying,
+                description character varying,
+                price       integer,
+                rating      integer,
+                preview     character varying,
+                city        character varying,
+                country     character varying
+            )
+AS
+$$
+BEGIN
+    RETURN QUERY
+        SELECT t.id,
+               t.title,
+               t.description,
+               t.price,
+               t.rating,
+               t.preview,
+               c.title  AS city,
+               co.title AS country
+        FROM tours t
+                 JOIN city c ON t.city = c.id
+                 JOIN country co ON c.country = co.id
+        WHERE t.ArchivedAt IS NULL
+          AND t.id = tourId;
 END;
 $$ LANGUAGE plpgSQL;
 CREATE OR REPLACE FUNCTION clientRegistration(firstName varchar, lastName varchar, login varchar,

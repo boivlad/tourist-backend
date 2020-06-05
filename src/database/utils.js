@@ -33,16 +33,9 @@ const getHotels = async(client) => {
   const result = await client.query('SELECT * FROM getHotels()');
   return result.rows;
 };
-const getTours = async(client) => {
-  console.log('getTours');
-  const result = await client.query('SELECT * FROM getTours()');
-  return result.rows;
-};
-const createHotel = async(client, {
-  title, description, rating, address, fileName,
-}) => {
-  console.log('createHotel');
-  const result = await client.query(`INSERT INTO Hotels (title, description, rating, address, preview) VALUES ('${title}', '${description}', '${rating}', '${address}', '${fileName}' );`);
+const getHotelById = async(client, { hotelId }) => {
+  console.log('getHotelById', hotelId);
+  const result = await client.query(`SELECT * FROM getHotels(${hotelId})`);
   return result.rows;
 };
 const createTour = async(client, {
@@ -50,6 +43,23 @@ const createTour = async(client, {
 }) => {
   console.log('createTour');
   const result = await client.query(`INSERT INTO tours (title, description, price, rating, city, preview) VALUES ('${title}', '${description}', '${price}', '${rating}', '${city}', '${fileName}' );`);
+  return result.rows;
+};
+const getTours = async(client) => {
+  console.log('getTours');
+  const result = await client.query('SELECT * FROM getTours()');
+  return result.rows;
+};
+const getToursById = async(client, { tourId }) => {
+  console.log('getToursById', tourId);
+  const result = await client.query(`SELECT * FROM getTours(${tourId})`);
+  return result.rows;
+};
+const createHotel = async(client, {
+  title, description, rating, address, fileName,
+}) => {
+  console.log('createHotel');
+  const result = await client.query(`INSERT INTO Hotels (title, description, rating, address, preview) VALUES ('${title}', '${description}', '${rating}', '${address}', '${fileName}' );`);
   return result.rows;
 };
 
@@ -60,7 +70,9 @@ export default {
   checkToken,
   deleteToken,
   getHotels,
+  getHotelById,
   getTours,
+  getToursById,
   createHotel,
   createTour,
 };

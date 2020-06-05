@@ -24,6 +24,12 @@ const getHotels = async(req, res) => {
   client.end();
   res.status(200).json({ hotels: result });
 };
+const getHotelById = async(req, res) => {
+  const client = await connection('anonymous');
+  const result = await DB.getHotelById(client, { hotelId: req.params.id });
+  client.end();
+  res.status(200).json({ hotel: result });
+};
 const createHotel = async(req, res) => {
   if (!isDirector(req.headers.authorization)) {
     res.status(403).json({ message: 'Forbidden' });
@@ -56,5 +62,6 @@ const createHotel = async(req, res) => {
 };
 
 router.get('/hotels', getHotels);
+router.get('/hotels/:id', getHotelById);
 router.post('/hotels', createHotel);
 export default router;

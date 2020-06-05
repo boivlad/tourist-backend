@@ -24,6 +24,12 @@ const getTours = async(req, res) => {
   client.end();
   res.status(200).json({ tours: result });
 };
+const getToursById = async(req, res) => {
+  const client = await connection('anonymous');
+  const result = await DB.getToursById(client, { tourId: req.params.id });
+  client.end();
+  res.status(200).json({ tour: result });
+};
 const createTour = async(req, res) => {
   if (!isDirector(req.headers.authorization)) {
     res.status(403).json({ message: 'Forbidden' });
@@ -56,5 +62,6 @@ const createTour = async(req, res) => {
 };
 
 router.get('/tours', getTours);
+router.get('/tours/:id', getToursById);
 router.post('/tours', createTour);
 export default router;
