@@ -36,39 +36,39 @@ const registration = async(req, res) => {
       firstName, lastName, userName: login, email, password, phone, address, dateOfBirth,
     } = req.body;
     if (!firstName) {
-      res.status(400).json({ message: 'FirstName is not specified' });
+      return res.status(400).json({ message: 'FirstName is not specified' });
     }
     if (!lastName) {
-      res.status(400).json({ message: 'LastName is not specified' });
+      return res.status(400).json({ message: 'LastName is not specified' });
     }
     if (!login) {
-      res.status(400).json({ message: 'Login is not specified' });
+      return res.status(400).json({ message: 'Login is not specified' });
     }
     if (!email) {
-      res.status(400).json({ message: 'Email is not specified' });
+      return res.status(400).json({ message: 'Email is not specified' });
     }
     if (!password) {
-      res.status(400).json({ message: 'Password is not specified' });
+      return res.status(400).json({ message: 'Password is not specified' });
     }
     if (!phone) {
-      res.status(400).json({ message: 'Phone is not specified' });
+      return res.status(400).json({ message: 'Phone is not specified' });
     }
     if (!address) {
-      res.status(400).json({ message: 'Address is not specified' });
+      return res.status(400).json({ message: 'Address is not specified' });
     }
     if (!dateOfBirth) {
-      res.status(400).json({ message: 'Date Of Birth is not specified' });
+      return res.status(400).json({ message: 'Date Of Birth is not specified' });
     }
     const client = await connection('anonymous');
     await DB.createUser(client, {
       firstName, lastName, login, email, password, phone, address, dateOfBirth,
     });
-    res.status(201).json({ message: 'Registration was successful' });
+    return res.status(201).json({ message: 'Registration was successful' });
   } catch (e) {
     if (e.code === '23505') {
-      res.status(409).json({ message: 'User already exist' });
+      return res.status(409).json({ message: 'User already exist' });
     } else {
-      res.status(422).json({ message: e });
+      return res.status(422).json({ message: e });
     }
   }
 };

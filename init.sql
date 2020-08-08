@@ -244,7 +244,8 @@ VALUES(3, 'Solomii Krushel''nyts''koi Street 3/2');INSERT INTO Address
 (city, title)
 VALUES(3, 'улица Городоцкая 65');INSERT INTO Address
 (city, title)
-VALUES(3, 'Ploshcha Knyazya Svyatoslava 5');INSERT INTO Hotels
+VALUES(3, 'Ploshcha Knyazya Svyatoslava 5');
+INSERT INTO Hotels
 (title, description, rating, address)
 VALUES('Wall Street',
 'Отель Wall Street расположен в Приморском районе Одессы, в 300 метрах от улицы Дерибасовской и в 700 метрах от Одесского театра оперы и балета. К услугам гостей терраса и круглосуточная стойка регистрации.'
