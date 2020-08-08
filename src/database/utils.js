@@ -1,3 +1,4 @@
+// USERS
 const getUser = async(client, { userName }) => {
   console.log('getUser', userName);
   const result = await client.query(`SELECT * FROM users WHERE login='${userName}' LIMIT 1`);
@@ -18,6 +19,8 @@ const createAdmin = async(client, {
   const result = await client.query(`SELECT FROM employeesRegistration('${firstName}', '${lastName}', '${userName}', '${email}', '${password}', '${phone}', '${address}', '${dateOfBirth}', '${employmentDate}', '${passport}')`);
   return result.rows;
 };
+
+// TOKEN
 const checkToken = async(client, { token }) => {
   console.log('checkToken', token);
   const result = await client.query(`SELECT * FROM tokens.blacklist WHERE token='${token}';`);
@@ -27,6 +30,15 @@ const deleteToken = async(client, { userId, token }) => {
   console.log('deleteToken', token);
   await client.query(`INSERT INTO tokens.blacklist(userId, token) VALUES('${userId}','${token}');`);
   return true;
+};
+
+// HOTELS
+const createHotel = async(client, {
+  title, description, rating, address, fileName,
+}) => {
+  console.log('createHotel');
+  const result = await client.query(`INSERT INTO Hotels (title, description, rating, address, preview) VALUES ('${title}', '${description}', '${rating}', '${address}', '${fileName}' );`);
+  return result.rows;
 };
 const getHotels = async(client) => {
   console.log('getHotels');
@@ -38,6 +50,8 @@ const getHotelById = async(client, { hotelId }) => {
   const result = await client.query(`SELECT * FROM getHotels(${hotelId}) LIMIT 1`);
   return result.rows;
 };
+
+// TOURS
 const createTour = async(client, {
   title, description, rating, price, fileName, city,
 }) => {
@@ -55,11 +69,11 @@ const getToursById = async(client, { tourId }) => {
   const result = await client.query(`SELECT * FROM getTours(${tourId}) LIMIT 1`);
   return result.rows;
 };
-const createHotel = async(client, {
-  title, description, rating, address, fileName,
-}) => {
-  console.log('createHotel');
-  const result = await client.query(`INSERT INTO Hotels (title, description, rating, address, preview) VALUES ('${title}', '${description}', '${rating}', '${address}', '${fileName}' );`);
+
+// TRANSFERS
+const getTransfers = async(client) => {
+  console.log('getTransfers');
+  const result = await client.query('SELECT * FROM getTransfers()');
   return result.rows;
 };
 
@@ -75,4 +89,5 @@ export default {
   getToursById,
   createHotel,
   createTour,
+  getTransfers,
 };

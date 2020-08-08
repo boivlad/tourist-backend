@@ -96,10 +96,10 @@ const registrationAdmin = async(req, res) => {
   console.log('Registration Manager');
   const userData = await verifyAuthByBearer(req.headers.authorization);
   if (!userData) {
-    res.status(401).json({ message: 'Not Authorized' });
+    return res.status(401).json({ message: 'Not Authorized' });
   }
   if (userData.role !== 'director') {
-    res.status(403).json({ message: 'Forbidden' });
+    return res.status(403).json({ message: 'Forbidden' });
   }
   const client = await connection('anonymous');
   try {
@@ -108,31 +108,31 @@ const registrationAdmin = async(req, res) => {
     } = req.body;
     let { employmentDate } = req.body;
     if (!firstName) {
-      res.status(400).json({ message: 'FirstName is not specified' });
+      return res.status(400).json({ message: 'FirstName is not specified' });
     }
     if (!lastName) {
-      res.status(400).json({ message: 'LastName is not specified' });
+      return res.status(400).json({ message: 'LastName is not specified' });
     }
     if (!userName) {
-      res.status(400).json({ message: 'Login is not specified' });
+      return res.status(400).json({ message: 'Login is not specified' });
     }
     if (!email) {
-      res.status(400).json({ message: 'Email is not specified' });
+      return res.status(400).json({ message: 'Email is not specified' });
     }
     if (!password) {
-      res.status(400).json({ message: 'Password is not specified' });
+      return res.status(400).json({ message: 'Password is not specified' });
     }
     if (!phone) {
-      res.status(400).json({ message: 'Phone is not specified' });
+      return res.status(400).json({ message: 'Phone is not specified' });
     }
     if (!address) {
-      res.status(400).json({ message: 'Address is not specified' });
+      return res.status(400).json({ message: 'Address is not specified' });
     }
     if (!dateOfBirth) {
-      res.status(400).json({ message: 'Date Of Birth is not specified' });
+      return res.status(400).json({ message: 'Date Of Birth is not specified' });
     }
     if (!passport) {
-      res.status(400).json({ message: 'Date Of Birth is not specified' });
+      return res.status(400).json({ message: 'Date Of Birth is not specified' });
     }
     if (!employmentDate) {
       employmentDate = new Date().toLocaleString('en-US',

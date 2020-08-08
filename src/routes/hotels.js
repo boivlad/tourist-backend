@@ -18,26 +18,25 @@ const storage = multer.diskStorage({
 });
 const uploadFile = multer({ storage }).array('preview');
 
-const getHotels = async(req, res) => {
+const getHotels = async (req, res) => {
   const client = await connection('anonymous');
   const result = await DB.getHotels(client);
   client.end();
-  res.status(200).json({ hotels: result });
+  return res.status(200).json({ hotels: result });
 };
-const getHotelById = async(req, res) => {
+const getHotelById = async (req, res) => {
   const client = await connection('anonymous');
   const result = await DB.getHotelById(client, { hotelId: req.params.id });
   client.end();
-  res.status(200).json({ hotel: result });
+  return res.status(200).json({ hotel: result });
 };
-const createHotel = async(req, res) => {
+const createHotel = async (req, res) => {
   if (!isDirector(req.headers.authorization)) {
-    res.status(403).json({ message: 'Forbidden' });
-    return;
+    return res.status(403).json({ message: 'Forbidden' });
   }
   const client = await connection('director');
 
-  uploadFile(req, res, async(err) => {
+  uploadFile(req, res, async (err) => {
     if (err) {
       return res.status(403).json({ message: err });
     }
@@ -49,7 +48,8 @@ const createHotel = async(req, res) => {
       return res.status(201).json({
         message: 'New hotel was created successfully',
       });
-    } catch (e) {
+    }
+    catch (e) {
       fs.unlinkSync(`${uploadPath}/${req.files[0].filename}`);
       if (e.code === '23505') {
         return res.status(409).json({ message: 'Same hotel already exist' });
