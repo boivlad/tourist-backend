@@ -23,8 +23,13 @@ const getTransfers = async (req, res) => {
   client.end();
   return res.status(200).json({ transfers: result });
 };
-
+const getTransferById = async(req, res) => {
+  const client = await connection('anonymous');
+  const result = await DB.getTransferById(client, { transferId: req.params.id });
+  client.end();
+  return res.status(200).json({ transfer: result[0] });
+};
 router.get('/transfers', getTransfers);
-// router.get('/tours/:id', getToursById);
-// router.post('/tours', createTour);
+router.get('/transfers/:id', getTransferById);
+// router.post('/transfers', createTransfer);
 export default router;

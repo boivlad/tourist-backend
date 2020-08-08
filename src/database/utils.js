@@ -76,7 +76,11 @@ const getTransfers = async(client) => {
   const result = await client.query('SELECT * FROM getTransfers()');
   return result.rows;
 };
-
+const getTransferById = async(client, { transferId }) => {
+  console.log('getTransferById', transferId);
+  const result = await client.query(`SELECT * FROM getTransfers(${transferId}) LIMIT 1`);
+  return result.rows;
+};
 export default {
   getUser,
   createUser,
@@ -90,4 +94,5 @@ export default {
   createHotel,
   createTour,
   getTransfers,
+  getTransferById,
 };

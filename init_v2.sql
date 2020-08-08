@@ -304,6 +304,39 @@ BEGIN
 END;
 $$ LANGUAGE plpgSQL;
 
+CREATE OR REPLACE FUNCTION getTransfers(transferId int)
+    RETURNS TABLE
+             (
+                id          integer,
+                title       character varying,
+                description character varying,
+                places      integer,
+                price       integer,
+                rating      integer,
+                preview     character varying,
+                city        character varying,
+                country     character varying
+            )
+AS
+$$
+BEGIN
+    RETURN QUERY
+         SELECT t.id,
+               t.title,
+               t.description,
+               t.places,
+               t.price,
+               t.rating,
+               t.preview,
+               c.title  AS city,
+               co.title AS country
+        FROM transfers t
+                 JOIN city c ON t.city = c.id
+                 JOIN country co ON c.country = co.id
+        WHERE t.ArchivedAt IS NULL
+          AND t.id = transferId;
+END;
+$$ LANGUAGE plpgSQL;
 --FUNCTIONS USERS
 CREATE OR REPLACE FUNCTION clientRegistration(firstName varchar, lastName varchar, login varchar,
                                               email varchar, password varchar, phone CHAR(13),
