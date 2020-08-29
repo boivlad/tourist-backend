@@ -28,7 +28,7 @@ const getHotelById = async (req, res) => {
   const client = await connection('anonymous');
   const result = await DB.getHotelById(client, { hotelId: req.params.id });
   client.end();
-  return res.status(200).json({ hotel: result });
+  return res.status(200).json({ hotel: result[0] });
 };
 const createHotel = async (req, res) => {
   if (!isDirector(req.headers.authorization)) {
