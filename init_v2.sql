@@ -29,7 +29,7 @@ CREATE TABLE Clients
     phone          CHAR(13) NOT NULL,
     dateOfBirthday DATE     NOT NULL,
     Address        VARCHAR  NOT NULL,
-    UNIQUE (phone)
+    UNIQUE (phone, userId)
 );
 
 CREATE TABLE Employees
@@ -45,27 +45,6 @@ CREATE TABLE Employees
     UNIQUE (Passport),
     UNIQUE (Phone)
 );
-
-CREATE OR REPLACE FUNCTION employeesRegistration(firstName varchar, lastName varchar, login varchar,
-                                                 email varchar, password varchar, phone CHAR(13),
-                                                 address varchar, DateOfBirthday date,
-                                                 EmploymentDate date, passport varchar)
-    RETURNS Void
-AS
-$$
-DECLARE
-    newId INT;
-BEGIN
-    INSERT INTO Users(login, password, email, role) VALUES (login, password, email, 'manager');
-    newId := currval(pg_get_serial_sequence('Users', 'userid'));
-    INSERT INTO employees(userId, firstname, LastName, Phone, Passport, Address, DateOfBirthday,
-                          EmploymentDate)
-    VALUES (newId, firstName, lastName, phone, passport, address, DateOfBirthday, EmploymentDate);
-
-
-END;
-$$ LANGUAGE plpgSQL;
-GRANT EXECUTE ON FUNCTION public.employeesRegistration(character varying, character varying, character varying, character varying, character varying, character, character varying, date, date, varchar) TO anonymous;
 
 CREATE TABLE Country
 (
@@ -137,10 +116,44 @@ CREATE TABLE Rooms
     Hotel       integer NOT NULL REFERENCES Hotels (Id) ON DELETE CASCADE ON UPDATE CASCADE,
     Rating      integer NOT NULL,
     Quantity    integer NOT NULL,
-    ArchivedAt  DATE DEFAULT NULL,
-    UNIQUE (Title)
+    Preview     varchar NOT NULL,
+    ArchivedAt  DATE DEFAULT NULL
+);
+CREATE TABLE RoomOrders
+(
+    OrderNumber SERIAL PRIMARY KEY,
+    UserId integer NOT NULL REFERENCES Users(userId)ON DELETE CASCADE ON UPDATE CASCADE,
+    Room integer NOT NULL REFERENCES Rooms(Id)ON DELETE CASCADE ON UPDATE CASCADE,
+    StartDate DATE NOT NULL,
+    EndDate DATE NOT NULL,
+    Places integer NOT NULL,
+    Prices integer NOT NULL,
+    OrderDate DATE NOT NULL,
+    Status OrderStatus DEFAULT 'New',
+    Manager integer DEFAULT NULL REFERENCES Users(userId) ON DELETE CASCADE ON UPDATE CASCADE
 );
 -- FUNCTIONS #############################
+CREATE OR REPLACE FUNCTION employeesRegistration(firstName varchar, lastName varchar, login varchar,
+                                                 email varchar, password varchar, phone CHAR(13),
+                                                 address varchar, DateOfBirthday date,
+                                                 EmploymentDate date, passport varchar)
+    RETURNS Void
+AS
+$$
+DECLARE
+    newId INT;
+BEGIN
+    INSERT INTO Users(login, password, email, role) VALUES (login, password, email, 'manager');
+    newId := currval(pg_get_serial_sequence('Users', 'userid'));
+    INSERT INTO employees(userId, firstname, LastName, Phone, Passport, Address, DateOfBirthday,
+                          EmploymentDate)
+    VALUES (newId, firstName, lastName, phone, passport, address, DateOfBirthday, EmploymentDate);
+
+
+END;
+$$ LANGUAGE plpgSQL;
+GRANT EXECUTE ON FUNCTION public.employeesRegistration(character varying, character varying, character varying, character varying, character varying, character, character varying, date, date, varchar) TO anonymous;
+
 CREATE OR REPLACE FUNCTION getHotels()
     RETURNS TABLE
             (
@@ -205,6 +218,40 @@ BEGIN
           AND h.id = hotelId;
 END;
 $$ LANGUAGE plpgSQL;
+
+-- FUNCTIONS FOR ROOMS
+
+CREATE OR REPLACE FUNCTION getRooms(hotelId int)
+    RETURNS TABLE
+            (
+                id          integer,
+                title       character varying,
+                description character varying,
+                places      integer,
+                price       integer,
+                rating      integer,
+                quantity    integer,
+                preview     character varying
+            )
+AS
+$$
+BEGIN
+    RETURN QUERY
+        SELECT r.id,
+               r.title,
+               r.description,
+               r.places,
+               r.price,
+               r.rating,
+               r.quantity,
+               r.preview
+                FROM rooms r
+                WHERE r.ArchivedAt IS NULL
+                  AND r.hotel = hotelId;
+END;
+$$ LANGUAGE plpgSQL;
+
+
 -- FUNCTIONS FOR TOURS
 CREATE OR REPLACE FUNCTION getTours()
     RETURNS TABLE
@@ -357,6 +404,23 @@ END;
 $$ LANGUAGE plpgSQL;
 
 GRANT EXECUTE ON FUNCTION public.clientregistration(character varying, character varying, character varying, character varying, character varying, character, character varying, date) TO anonymous;
+-- FUNCTION ORDER ROOM
+CREATE OR REPLACE FUNCTION orderRoom(   userId int,
+                                        room int,
+                                        startDate date,
+                                        endDate date,
+                                        places int,
+                                        prices int)
+    RETURNS Void
+AS
+$$
+BEGIN
+    INSERT INTO RoomOrders(userid, room, startDate, endDate, places, prices, orderDate)
+    VALUES (userId, room, startDate, endDate, places, prices, CURRENT_DATE);
+END;
+$$ LANGUAGE plpgSQL;
+
+GRANT EXECUTE ON FUNCTION public.orderRoom(int, int, date, date, int, int) TO client;
 
 -- INSERT ################################
 INSERT INTO Country
@@ -511,6 +575,76 @@ INSERT INTO Hotels
 VALUES('Two-bedroom apartment near the station',
         'Апартаменты «Около вокзала» с бесплатным Wi-Fi и балконом расположены в городе Львов, в 500 метрах от церкви святого Георгия Победоносца. В числе удобств — бесплатная частная парковка. Львовский железнодорожный вокзал и центр города находятся в 20 минутах ходьбы.'
 , 3, 10, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg');
+--INSERT ROOMS
+
+
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный двухместный номер с 2 отдельными кроватями',
+'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2, 250, 1,
+5, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный одномесный номер', 'Звукоизолированный одномесный номер, мини-баром и халатом.',
+1, 150, 1, 5, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный двухместный номер с 2 отдельными кроватями',
+'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2, 230, 1,
+4, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный одномесный номер', 'Звукоизолированный одномесный номер, мини-баром и халатом.',
+1, 120, 1, 4, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный двухместный номер с 2 отдельными кроватями',
+'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2, 245, 1,
+4, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный одномесный номер', 'Звукоизолированный одномесный номер, мини-баром и халатом.',
+1, 130, 1, 3, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный двухместный номер с 2 отдельными кроватями',
+'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2, 240, 3,
+4, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный одномесный номер', 'Звукоизолированный одномесный номер, мини-баром и халатом.',
+1, 140, 3, 4, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный двухместный номер с 2 отдельными кроватями',
+'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2, 225, 3,
+4, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный одномесный номер', 'Звукоизолированный одномесный номер, мини-баром и халатом.',
+1, 150, 3, 5, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный двухместный номер с 2 отдельными кроватями',
+'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2, 300, 3,
+5, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный одномесный номер', 'Звукоизолированный одномесный номер, мини-баром и халатом.',
+1, 160, 3, 5, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный двухместный номер с 2 отдельными кроватями',
+'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2, 260, 6,
+5, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный одномесный номер', 'Звукоизолированный одномесный номер, мини-баром и халатом.',
+1, 145, 6, 4, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный двухместный номер с 2 отдельными кроватями',
+'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2, 270, 6,
+5, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный одномесный номер', 'Звукоизолированный одномесный номер, мини-баром и халатом.',
+1, 155, 6, 5, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный двухместный номер с 2 отдельными кроватями',
+'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2, 280, 6,
+5, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный одномесный номер', 'Звукоизолированный одномесный номер, мини-баром и халатом.',
+1, 135, 6, 3, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
+INSERT INTO Rooms (title, description, places, price, hotel, rating, preview, quantity)
+VALUES('Стандартный двухместный номер с 2 отдельными кроватями',
+'Звукоизолированный двухместный номер с 2 отдельными кроватями, мини-баром и халатами.', 2, 290, 6,
+5, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg', 50);
 
 --INSERT TRANSFERS
 INSERT INTO Transfers
@@ -563,6 +697,34 @@ INSERT INTO Transfers
 VALUES('Mitsubishi Lancer X AT',
 'Удобный седан всемирно известного японского бренда с неповторимым стилем и техническими характеристиками. Mitsubishi Lancer Х в аренду востребован для самых разных целей: выездов на природу, путешествия с семьей или компанией, деловых поездок, прочих личных потребностей.'
 , 4, 1500, 3, 4, '1591277287315-0-02-02-6a9dc9e8620b8d82023e529fdcc3ee2f3a1a564cd3bd6f8ba8b280e7e066e988_9e547d12.jpg');
+
+
+--TRIGGERS
+-- -- Trigger for oversize rooms
+CREATE OR REPLACE FUNCTION odrerHotelFunc() RETURNS TRIGGER
+AS $$
+  DECLARE roomCount INT;
+  BEGIN
+      SELECT r.quantity - COUNT(ro.room) INTO roomCount
+      FROM Rooms r
+      LEFT OUTER JOIN roomorders ro ON ro.room = r.id AND (ro.startdate BETWEEN NEW.startdate AND NEW.enddate)
+                              OR (ro.enddate BETWEEN NEW.startdate AND NEW.enddate)
+      WHERE r.id = NEW.room
+      GROUP BY r.quantity;
+
+      if(roomCount = 0)
+      THEN
+        RAISE EXCEPTION 'Недостаточно свободных номеров';
+      END IF;
+      RETURN NEW;
+  END;
+$$ LANGUAGE plpgSQl;
+
+CREATE  TRIGGER orderHotel
+  BEFORE INSERT
+  ON roomorders
+  FOR EACH ROW
+  EXECUTE PROCEDURE odrerHotelFunc();
 -- Token ########################
 CREATE SCHEMA tokens AUTHORIZATION postgres;
 CREATE TABLE tokens.blacklist

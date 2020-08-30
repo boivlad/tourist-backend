@@ -50,6 +50,21 @@ const getHotelById = async(client, { hotelId }) => {
   const result = await client.query(`SELECT * FROM getHotels(${hotelId}) LIMIT 1`);
   return result.rows;
 };
+const getRoomsByHotelId = async(client, { hotelId }) => {
+  console.log('getRoomsByHotelId', hotelId);
+  const result = await client.query(`SELECT * FROM getRooms(${hotelId})`);
+  return result.rows;
+};
+const getRoomById = async(client, { roomId }) => {
+  console.log('getRoomById', roomId);
+  const result = await client.query(`SELECT * FROM rooms WHERE Id='${roomId}' LIMIT 1`);
+  return result.rows[0];
+};
+const orderRoom = async(client, { userId, roomId, startDate, endDate, places, prices }) => {
+  console.log('order room', roomId, 'for user', userId);
+  const result = await client.query(`SELECT * FROM orderRoom('${userId}','${roomId}','${startDate}','${endDate}','${places}','${prices}')`);
+  return result.rows;
+};
 
 // TOURS
 const createTour = async(client, {
@@ -89,6 +104,9 @@ export default {
   deleteToken,
   getHotels,
   getHotelById,
+  getRoomsByHotelId,
+  getRoomById,
+  orderRoom,
   getTours,
   getToursById,
   createHotel,

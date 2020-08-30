@@ -34,7 +34,7 @@ const registration = async(req, res) => {
   try {
     const {
       firstName, lastName, userName: login, email, password, phone, address, dateOfBirth,
-    } = req.body;
+    } = req.body.data;
     if (!firstName) {
       return res.status(400).json({ message: 'FirstName is not specified' });
     }

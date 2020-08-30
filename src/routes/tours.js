@@ -21,13 +21,13 @@ const uploadFile = multer({ storage }).array('preview');
 const getTours = async (req, res) => {
   const client = await connection('anonymous');
   const result = await DB.getTours(client);
-  client.end();
+  await client.end();
   return res.status(200).json({ tours: result });
 };
 const getToursById = async (req, res) => {
   const client = await connection('anonymous');
   const result = await DB.getToursById(client, { tourId: req.params.id });
-  client.end();
+  await client.end();
   return res.status(200).json({ tour: result[0] });
 };
 const createTour = async (req, res) => {
@@ -56,7 +56,7 @@ const createTour = async (req, res) => {
       }
       return res.status(422).json({ message: e });
     } finally {
-      client.end();
+      await client.end();
     }
   });
 };

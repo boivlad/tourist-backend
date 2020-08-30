@@ -163,7 +163,8 @@ Details VARCHAR NOT NULL,
 Rating integer NOT NULL,
 UserId integer NOT NULL REFERENCES Clients(UserId)ON DELETE CASCADE ON UPDATE CASCADE,
 Date DATE NOT NULL
-);CREATE TABLE RoomOrders
+);
+CREATE TABLE RoomOrders
 (
 OrderNumber SERIAL PRIMARY KEY,
 UserId integer NOT NULL REFERENCES Clients(UserId)ON DELETE CASCADE ON UPDATE CASCADE,
@@ -175,7 +176,7 @@ Prices integer NOT NULL,
 OrderDate DATE NOT NULL,
 InsurancePolicy VARCHAR NOT NULL,
 Status OrderStatus NOT NULL,
-Manager integer NOT NULL REFERENCES Employees(Id)ON DELETE CASCADE ON UPDATE CASCADE
+Manager integer REFERENCES Employees(Id)ON DELETE CASCADE ON UPDATE CASCADE
 );CREATE TABLE TourOrders
 (
 OrderNumber SERIAL PRIMARY KEY,
@@ -188,7 +189,7 @@ Prices integer NOT NULL,
 OrderDate DATE NOT NULL,
 InsurancePolicy VARCHAR NOT NULL,
 Status OrderStatus NOT NULL,
-Manager integer NOT NULL REFERENCES Employees(Id)ON DELETE CASCADE ON UPDATE CASCADE
+Manager integer REFERENCES Employees(Id)ON DELETE CASCADE ON UPDATE CASCADE
 );CREATE TABLE TransferOrders
 (
 OrderNumber SERIAL PRIMARY KEY,
@@ -201,7 +202,7 @@ Prices integer NOT NULL,
 OrderDate DATE NOT NULL,
 InsurancePolicy VARCHAR NOT NULL,
 Status OrderStatus NOT NULL,
-Manager integer NOT NULL REFERENCES Employees(Id)ON DELETE CASCADE ON UPDATE CASCADE
+Manager integer REFERENCES Employees(Id)ON DELETE CASCADE ON UPDATE CASCADE
 );#--------------------------------------------------------------------------------------
 # -------FUNCTIONS
 DROP FUNCTION gethotels();CREATE OR REPLACE FUNCTION testGetHotels()
