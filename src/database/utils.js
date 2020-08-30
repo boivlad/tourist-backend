@@ -62,8 +62,8 @@ const getRoomById = async(client, { roomId }) => {
 };
 const orderRoom = async(client, { userId, roomId, startDate, endDate, places, prices }) => {
   console.log('order room', roomId, 'for user', userId);
-  const result = await client.query(`SELECT * FROM orderRoom('${userId}','${roomId}','${startDate}','${endDate}','${places}','${prices}')`);
-  return result.rows;
+  await client.query(`SELECT * FROM orderRoom('${userId}','${roomId}','${startDate}','${endDate}','${places}','${prices}')`);
+  return true;
 };
 
 // TOURS
@@ -86,8 +86,8 @@ const getToursById = async(client, { tourId }) => {
 };
 const orderTour = async(client, { userId, tourId, startDate, endDate, places, prices }) => {
   console.log('order tour', tourId, 'for user', userId);
-  const result = await client.query(`SELECT * FROM orderTour('${userId}','${tourId}','${startDate}','${endDate}','${places}','${prices}')`);
-  return result.rows;
+  await client.query(`SELECT * FROM orderTour('${userId}','${tourId}','${startDate}','${endDate}','${places}','${prices}')`);
+  return true;
 };
 
 // TRANSFERS
@@ -99,7 +99,13 @@ const getTransfers = async(client) => {
 const getTransferById = async(client, { transferId }) => {
   console.log('getTransferById', transferId);
   const result = await client.query(`SELECT * FROM getTransfers(${transferId}) LIMIT 1`);
-  return result.rows;
+  return result.rows[0];
+};
+const orderTransfer = async(client, { userId, transferId, startDate, endDate, places, prices }) => {
+  console.log('order transfer', transferId, 'for user', userId);
+  console.log(`SELECT * FROM orderTransfer('${userId}','${transferId}','${startDate}','${endDate}','${places}','${prices}')`)
+  await client.query(`SELECT * FROM orderTransfer('${userId}','${transferId}','${startDate}','${endDate}','${places}','${prices}')`);
+  return true;
 };
 export default {
   getUser,
@@ -119,4 +125,5 @@ export default {
   createTour,
   getTransfers,
   getTransferById,
+  orderTransfer,
 };
