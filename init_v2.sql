@@ -132,6 +132,32 @@ CREATE TABLE RoomOrders
     Status OrderStatus DEFAULT 'New',
     Manager integer DEFAULT NULL REFERENCES Users(userId) ON DELETE CASCADE ON UPDATE CASCADE
 );
+CREATE TABLE TourOrders
+(
+    OrderNumber SERIAL PRIMARY KEY,
+    UserId integer NOT NULL REFERENCES Users(userId)ON DELETE CASCADE ON UPDATE CASCADE,
+    Tour integer NOT NULL REFERENCES Tours(Id)ON DELETE CASCADE ON UPDATE CASCADE,
+    StartDate DATE NOT NULL,
+    EndDate DATE NOT NULL,
+    Places integer NOT NULL,
+    Prices integer NOT NULL,
+    OrderDate DATE NOT NULL,
+    Status OrderStatus DEFAULT 'New',
+    Manager integer DEFAULT NULL REFERENCES Users(userId) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE TransferOrders
+(
+    OrderNumber SERIAL PRIMARY KEY,
+    UserId integer NOT NULL REFERENCES Users(userId)ON DELETE CASCADE ON UPDATE CASCADE,
+    Transfer integer NOT NULL REFERENCES Transfers(Id)ON DELETE CASCADE ON UPDATE CASCADE,
+    StartDate DATE NOT NULL,
+    EndDate DATE NOT NULL,
+    Places integer NOT NULL,
+    Prices integer NOT NULL,
+    OrderDate DATE NOT NULL,
+    Status OrderStatus DEFAULT 'New',
+    Manager integer DEFAULT NULL REFERENCES Users(userId) ON DELETE CASCADE ON UPDATE CASCADE
+);
 -- FUNCTIONS #############################
 CREATE OR REPLACE FUNCTION employeesRegistration(firstName varchar, lastName varchar, login varchar,
                                                  email varchar, password varchar, phone CHAR(13),
@@ -421,6 +447,40 @@ END;
 $$ LANGUAGE plpgSQL;
 
 GRANT EXECUTE ON FUNCTION public.orderRoom(int, int, date, date, int, int) TO client;
+
+CREATE OR REPLACE FUNCTION orderTour(   userId int,
+                                        tour int,
+                                        startDate date,
+                                        endDate date,
+                                        places int,
+                                        prices int)
+    RETURNS Void
+AS
+$$
+BEGIN
+    INSERT INTO TourOrders(userid, tour, startDate, endDate, places, prices, orderDate)
+    VALUES (userId, tour, startDate, endDate, places, prices, CURRENT_DATE);
+END;
+$$ LANGUAGE plpgSQL;
+
+GRANT EXECUTE ON FUNCTION public.orderTour(int, int, date, date, int, int) TO client;
+
+CREATE OR REPLACE FUNCTION orderTransfer(   userId int,
+                                        transfer int,
+                                        startDate date,
+                                        endDate date,
+                                        places int,
+                                        prices int)
+    RETURNS Void
+AS
+$$
+BEGIN
+    INSERT INTO TransferOrders(userid, transfer, startDate, endDate, places, prices, orderDate)
+    VALUES (userId, transfer, startDate, endDate, places, prices, CURRENT_DATE);
+END;
+$$ LANGUAGE plpgSQL;
+
+GRANT EXECUTE ON FUNCTION public.orderTransfer(int, int, date, date, int, int) TO client;
 
 -- INSERT ################################
 INSERT INTO Country

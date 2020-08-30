@@ -101,7 +101,6 @@ const createOrder = async (req, res) => {
   }finally {
     await client.end();
   }
-
 }
 router.get('/hotels', getHotels);
 router.get('/hotels/:id', getHotelById);

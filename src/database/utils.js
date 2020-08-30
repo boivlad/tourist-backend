@@ -82,6 +82,11 @@ const getTours = async(client) => {
 const getToursById = async(client, { tourId }) => {
   console.log('getToursById', tourId);
   const result = await client.query(`SELECT * FROM getTours(${tourId}) LIMIT 1`);
+  return result.rows[0];
+};
+const orderTour = async(client, { userId, tourId, startDate, endDate, places, prices }) => {
+  console.log('order tour', tourId, 'for user', userId);
+  const result = await client.query(`SELECT * FROM orderTour('${userId}','${tourId}','${startDate}','${endDate}','${places}','${prices}')`);
   return result.rows;
 };
 
@@ -109,6 +114,7 @@ export default {
   orderRoom,
   getTours,
   getToursById,
+  orderTour,
   createHotel,
   createTour,
   getTransfers,
