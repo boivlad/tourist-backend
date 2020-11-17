@@ -1,7 +1,4 @@
 .idea
 node_modules/
-.eslintrc.json
-.babelrc
-package-lock.json
 dist/
 public/uploads/images
